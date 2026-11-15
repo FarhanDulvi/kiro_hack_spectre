@@ -76,7 +76,7 @@ export default function Home() {
                 Open the live dashboard
               </Link>
               <Link href="/dashboard?demo=1" className="rounded-xl border-2 border-ink px-6 py-3 text-[16px] font-medium hover:bg-white">
-                Watch the 30-second demo
+                Watch the 60-second demo
               </Link>
               <p className="w-full text-[14px] text-mist-dim">
                 <LiveCount />

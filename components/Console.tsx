@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import { GROUPS, SIREN_GROUP_ID } from "@/data/groups";
 import { LANGS } from "@/data/languages";
 import { SAMPLES, SENSOR_EVENTS } from "@/data/samples";
@@ -8,6 +8,7 @@ import { areasText, checkMessage, compose, targetGroups } from "@/lib/compose";
 import { displayState, extractFacts, fmtTime } from "@/lib/extract";
 import { append, firstBroken, simRef, type LedgerEntry } from "@/lib/ledger";
 import { SEVERITY } from "@/lib/severity";
+import { narrate, stopSpeaking } from "@/lib/speak";
 import type { Facts, Hazard, Lang, OfficialAlert } from "@/lib/types";
 import { verify, type Verdict } from "@/lib/verify";
 import { AGENTS, runPipeline, type Agent, type AgentMessage, type PipelineResult } from "@/lib/agents";
@@ -43,18 +44,34 @@ type LogLine = AgentMessage & { time: string };
 const now = () => new Date().toLocaleTimeString("en-GB");
 
 /** The guided demo: one click tells the whole story, step by step. */
-type DemoStep = { caption: string; wait: number; select?: string; act?: "run" | "pay" | "tamper" | "check"; scroll?: string };
+type DemoStep = { caption: string; say?: string; wait: number; select?: string; act?: "run" | "pay" | "tamper" | "check"; scroll?: string };
 const VERIFY_CARD = "section[aria-label=Verification]";
+const MAP_CARD = "section[aria-labelledby=map-title]";
+// About 60 seconds in all. `say` is the spoken version where the caption would be read aloud badly.
 const DEMO: DemoStep[] = [
-  { caption: "A river sensor on Sungai Kelantan crosses warning level. There is no official warning yet.", select: "sensor-kelantan", wait: 1800 },
-  { caption: "Perisai runs it. The Auditor holds it: no official source, no alert.", act: "run", wait: 3200, scroll: VERIFY_CARD },
-  { caption: "Now an official JPS flood warning for Klang arrives.", select: "sample-flood", wait: 1800 },
-  { caption: "The Auditor scores it 100 out of 100: JPS, the river sensor and a live MetMalaysia warning all agree.", act: "run", wait: 3600, scroll: VERIFY_CARD },
-  { caption: "The Herald sends it in Bengali, Nepali, Burmese and Urdu, only to the 4 groups in Klang and Shah Alam. The dorm siren goes off.", wait: 4500, scroll: "#phones-title" },
-  { caption: "The Treasurer pays RM200 per worker over DuitNow, once per event. This part is simulated.", act: "pay", wait: 3200, scroll: "#aid-title" },
-  { caption: "Someone secretly edits an old payout in the ledger…", act: "tamper", wait: 2200, scroll: "#ledger-title" },
-  { caption: "…and the ledger catches it straight away.", act: "check", wait: 3800, scroll: "#ledger-title" },
-  { caption: "That is Perisai. Pick a live MetMalaysia warning on the left to try it yourself.", wait: 0 },
+  { caption: "Official flood warnings go out in Malay and English. Many migrant workers can’t read them. This is Perisai.", wait: 8000, scroll: "top" },
+  { caption: "A river sensor crosses its warning level, but there is no official warning yet.", select: "sensor-kelantan", wait: 6000 },
+  { caption: "The Auditor holds it. No official source, no alert.", act: "run", wait: 4500, scroll: VERIFY_CARD },
+  { caption: "Now an official JPS flood warning arrives for Klang.", select: "sample-flood", wait: 4000, scroll: "top" },
+  {
+    caption: "It scores 100 out of 100. JPS, the river sensor and a live MetMalaysia warning all agree.",
+    say: "It scores one hundred out of one hundred. J P S, the river sensor, and a live Met Malaysia warning all agree.",
+    act: "run",
+    wait: 8000,
+    scroll: VERIFY_CARD,
+  },
+  { caption: "The map shades the warned area. Only the four worker groups inside it are warned.", wait: 6000, scroll: MAP_CARD },
+  { caption: "They get it in Bengali, Nepali, Burmese and Urdu, and the dormitory siren goes off.", wait: 6500, scroll: "#phones-title" },
+  {
+    caption: "Relief of RM200 per worker is released, once per event. This part is simulated.",
+    say: "Relief of two hundred ringgit per worker is released, once per event. This part is simulated.",
+    act: "pay",
+    wait: 7000,
+    scroll: "#aid-title",
+  },
+  { caption: "Now someone secretly edits an old payout in the ledger.", act: "tamper", wait: 4500, scroll: "#ledger-title" },
+  { caption: "The ledger catches it straight away.", act: "check", wait: 3500, scroll: "#ledger-title" },
+  { caption: "That is Perisai. Warnings everyone can understand.", wait: 0 },
 ];
 
 /** What the ESP32 river sensor would post; the dashboard can send one for the demo. */
@@ -95,6 +112,16 @@ export function Console() {
   const [posting, setPosting] = useState(false);
   const chainRef = useRef<LedgerEntry[]>([]);
   const [demo, setDemo] = useState<number | null>(null);
+  // Microsoft Edge ships natural English voices; other browsers may have none.
+  const isEdge = useSyncExternalStore(
+    () => () => {},
+    () => /Edg\//.test(navigator.userAgent),
+    () => true,
+  );
+  useEffect(() => {
+    // Ask for the voice list early so it is ready when the demo starts.
+    if ("speechSynthesis" in window) window.speechSynthesis.getVoices();
+  }, []);
 
   useEffect(() => {
     fetch("/api/official")
@@ -257,6 +284,25 @@ export function Console() {
     if (demo === null) return;
     const s = DEMO[demo];
     const timers: ReturnType<typeof setTimeout>[] = [];
+    // A step ends once its voice-over has finished and its minimum time has passed.
+    let spoken = false;
+    let waited = false;
+    let over = false;
+    const advance = () => {
+      if (over || !spoken || !waited) return;
+      over = true;
+      if (demo < DEMO.length - 1) timers.push(setTimeout(() => setDemo(demo + 1), 350));
+    };
+    const heard = () => {
+      spoken = true;
+      advance();
+    };
+    // A short pause before speaking: browsers can drop speech started right after a cancel.
+    timers.push(
+      setTimeout(() => {
+        if (!narrate(s.say ?? s.caption, heard)) heard();
+      }, 180),
+    );
     timers.push(
       setTimeout(() => {
         if (s.select) select(s.select);
@@ -267,12 +313,36 @@ export function Console() {
       }, 50),
     );
     if (s.scroll) {
+      const target = s.scroll;
       timers.push(
-        setTimeout(() => document.querySelector(s.scroll!)?.scrollIntoView({ behavior: "smooth", block: "center" }), s.act === "run" ? 1600 : 300),
+        setTimeout(
+          () =>
+            target === "top"
+              ? window.scrollTo({ top: 0, behavior: "smooth" })
+              : document.querySelector(target)?.scrollIntoView({ behavior: "smooth", block: "center" }),
+          s.act === "run" ? 1600 : 300,
+        ),
       );
     }
-    if (demo < DEMO.length - 1) timers.push(setTimeout(() => setDemo(demo + 1), s.wait));
-    return () => timers.forEach(clearTimeout);
+    timers.push(
+      setTimeout(() => {
+        waited = true;
+        advance();
+      }, s.wait),
+    );
+    // Never get stuck if the voice stalls.
+    timers.push(
+      setTimeout(() => {
+        spoken = true;
+        waited = true;
+        advance();
+      }, s.wait + 7000),
+    );
+    return () => {
+      over = true;
+      timers.forEach(clearTimeout);
+      stopSpeaking();
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [demo]);
 
@@ -313,8 +383,15 @@ export function Console() {
             <svg viewBox="0 0 10 10" className="size-2.5" aria-hidden>
               <path d="M1 0.5 L9.5 5 L1 9.5 Z" fill="currentColor" />
             </svg>
-            {demo !== null && demo < DEMO.length - 1 ? "Demo playing…" : "Play the 30-second demo"}
+            {demo !== null && demo < DEMO.length - 1 ? "Demo playing…" : "Play the 60-second demo"}
           </button>
+          {isEdge ? (
+            <p className="mt-2 text-[12.5px] text-mist-dim">With an English voice-over. Turn your sound on.</p>
+          ) : (
+            <p role="note" className="mt-2 w-fit rounded-lg border border-amaran bg-amaran/10 px-3 py-1.5 text-[13px] font-medium">
+              For the voice-over, open this page in Microsoft Edge. Other browsers may play captions only.
+            </p>
+          )}
         </div>
         <div className="flex gap-3" aria-live="polite">
           <Stat label="Warnings sent" value={String(Object.keys(sent).length)} />

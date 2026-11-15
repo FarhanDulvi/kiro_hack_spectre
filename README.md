@@ -3,7 +3,7 @@
 **Official disaster warnings, in the languages Malaysia's migrant workers read. Detect, verify, respond.**
 
 - **Live app:** https://perisai.onrender.com
-- **30-second guided demo:** https://perisai.onrender.com/dashboard?demo=1
+- **60-second guided demo (voice-over in Microsoft Edge):** https://perisai.onrender.com/dashboard?demo=1
 - **Architecture:** https://perisai.onrender.com/architecture
 
 Built on 15 November 2026 at the STC Mini Hackathon (theme: Disaster Recovery) by Farhan (lead), Resam, Yara and Rehan Veeran. *Perisai* is Malay for "shield".
@@ -27,7 +27,7 @@ Four agents run in a fixed order. Each one hands the next a message, and each on
 
 ## Try it
 
-1. Open the [dashboard](https://perisai.onrender.com/dashboard) and press **Play the 30-second demo**, or:
+1. Open the [dashboard](https://perisai.onrender.com/dashboard) and press **Play the 60-second demo** (use Microsoft Edge for the English voice-over), or:
 2. Pick a live MetMalaysia warning on the left and press **Run Perisai**. A warning that names Petaling reaches only the Petaling groups; the Klang groups next door stay quiet.
 3. Tick **Show the English meaning** to see exactly what each worker reads.
 4. Voice notes use the browser's own voices. Microsoft Edge has Bengali, Nepali, Burmese and Urdu voices; Chrome has Hindi and Indonesian.
