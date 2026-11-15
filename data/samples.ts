@@ -20,7 +20,7 @@ export const SENSOR_EVENTS: OfficialAlert[] = [
       hazard: "flood",
       severity: "amaran",
       landStates: ["Kelantan"],
-      districts: { Kelantan: ["Kota Bharu"] },
+      districts: { Kelantan: ["Tanah Merah"] },
       river: "Sungai Kelantan",
       station: "Jambatan Guillemard",
     },

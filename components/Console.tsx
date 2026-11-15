@@ -14,6 +14,7 @@ import { AGENTS, runPipeline, type Agent, type AgentMessage, type PipelineResult
 import { readingToAlert, type SensorReading } from "@/lib/sensors";
 import { AidPanel, LedgerPanel } from "./Ledger";
 import { MapView } from "./MapView";
+import { RealMap } from "./RealMap";
 import { MessageBody, Phone, VoiceNote } from "./Phone";
 import { SirenBox } from "./SirenBox";
 
@@ -391,7 +392,13 @@ export function Console() {
                     : "Groups light up once the warning is sent"}
               </p>
             </div>
-            <MapView facts={step >= 1 ? facts : null} groups={GROUPS} reached={reached} />
+            <RealMap
+              facts={step >= 1 ? facts : null}
+              groups={GROUPS}
+              reached={reached}
+              gauge={step >= 1 ? (alert.gauge ?? null) : null}
+              fallback={<MapView facts={step >= 1 ? facts : null} groups={GROUPS} reached={reached} />}
+            />
           </section>
 
           <section aria-labelledby="compare-title" className="grid overflow-hidden rounded-2xl border border-line md:grid-cols-2">

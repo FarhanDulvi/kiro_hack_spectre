@@ -6,7 +6,7 @@ import type { WorkerGroup } from "@/lib/types";
  * Locations are approximate town centres.
  */
 export const GROUPS: WorkerGroup[] = [
-  { id: "kilang-klang", name: "Kilang Klang", community: "Bangladeshi workers", state: "Selangor", district: "Klang", town: "Klang", lang: "bn", members: 240, lat: 3.0449, lng: 101.4456 },
+  { id: "kilang-klang", name: "Kilang Klang", community: "Bangladeshi workers", state: "Selangor", district: "Klang", town: "Klang", lang: "bn", members: 240, lat: 3.0689, lng: 101.4385 },
   { id: "tapak-shah-alam", name: "Tapak bina Shah Alam", community: "Nepali workers", state: "Selangor", district: "Petaling", town: "Shah Alam", lang: "ne", members: 180, lat: 3.0733, lng: 101.5185 },
   { id: "pelabuhan-klang", name: "Pelabuhan Klang", community: "Myanmar workers", state: "Selangor", district: "Klang", town: "Port Klang", lang: "my", members: 130, lat: 3.0003, lng: 101.3925 },
   { id: "kilang-seksyen-26", name: "Kilang Seksyen 26", community: "Pakistani workers", state: "Selangor", district: "Petaling", town: "Shah Alam", lang: "ur", members: 90, lat: 3.035, lng: 101.53 },

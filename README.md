@@ -77,9 +77,9 @@ Open http://localhost:3000. No API keys are needed.
 
 ## Built with
 
-Next.js 16 and TypeScript, Tailwind CSS, d3-geo with DOSM state boundaries, Web Crypto for the ledger, the browser's speech engine for voice notes, and Space Grotesk, Instrument Serif and Noto fonts.
+Next.js 16 and TypeScript, Tailwind CSS, Leaflet with OpenStreetMap tiles and DOSM state and district boundaries (d3-geo for the offline fallback map), Web Crypto for the ledger, the browser's speech engine for voice notes, and Space Grotesk, Instrument Serif and Noto fonts.
 
 ## Credits
 
-- Live warnings: MetMalaysia via data.gov.my. State boundaries: DOSM open data (`dosm-malaysia/data-open`).
+- Live warnings: MetMalaysia via data.gov.my. State and district boundaries: DOSM open data (`dosm-malaysia/data-open`). Map tiles: © OpenStreetMap contributors.
 - The agent pattern (Watchtower, Auditor, Treasurer) and the architecture page layout were adapted, with permission, from an open-source disaster-relief project by GitHub user debojyoti10CC. Perisai adds the Herald and replaces image detection and crypto payouts with official Malaysian feeds, river sensors and DuitNow.
