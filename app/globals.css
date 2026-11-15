@@ -1,0 +1,90 @@
+@import "tailwindcss";
+
+/*
+ * Perisai palette: cream page, Space Grotesk, serif italic display, black pill
+ * buttons. Accent colours are the four bands painted on JPS river gauges, so colour
+ * always means severity.
+ */
+@theme inline {
+  --color-night: #f3f0ea;
+  --color-deep: #e8e4db;
+  --color-panel: #ffffff;
+  --color-line: #dcd7cc;
+  --color-mist: #111111;
+  --color-mist-dim: #6b675f;
+  --color-paper: #ffffff;
+  --color-ink: #111111;
+  --color-chat: #edf0eb;
+  --color-normal: #2e9e6a;
+  --color-waspada: #f2b632;
+  --color-amaran: #ef7a26;
+  --color-bahaya: #e5484d;
+  --color-signal: #4f6bed;
+  --font-sans: var(--font-ui), var(--font-bn), var(--font-deva), var(--font-mya), var(--font-urdu),
+    system-ui, sans-serif;
+  --font-serif: var(--font-display), Georgia, serif;
+}
+
+html {
+  color-scheme: light;
+}
+
+body {
+  background: var(--color-night);
+  color: var(--color-mist);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-signal);
+  outline-offset: 2px;
+}
+
+/* Dotted texture used behind the hero, like a printed map. */
+.dots {
+  background-image: radial-gradient(#cfc9bc 1.1px, transparent 1.2px);
+  background-size: 14px 14px;
+}
+
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+.marquee {
+  animation: marquee 38s linear infinite;
+}
+.marquee-rev {
+  animation: marquee 44s linear infinite reverse;
+}
+
+/* Pins that received the warning pulse outward like a ripple on water. */
+@keyframes ripple {
+  from { r: 6; opacity: 0.9; }
+  to { r: 22; opacity: 0; }
+}
+.pin-ripple {
+  animation: ripple 1.6s ease-out infinite;
+}
+
+@keyframes arrive {
+  from { opacity: 0; transform: translateY(14px) scale(0.98); }
+  to { opacity: 1; transform: none; }
+}
+.arrive {
+  animation: arrive 420ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.25; }
+}
+.blink {
+  animation: blink 0.9s steps(2, jump-none) infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pin-ripple, .arrive, .blink, .marquee, .marquee-rev {
+    animation: none;
+  }
+}

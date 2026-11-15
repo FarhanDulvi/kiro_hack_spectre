@@ -1,0 +1,247 @@
+import type { GlossLang } from "@/lib/types";
+
+/**
+ * Every line Faham sends is built from these phrases. Each phrase has an exact
+ * English meaning, so the operator always knows what a worker will read.
+ * Slots like {river} are filled with names copied unchanged from the official text.
+ *
+ * Status: AI-drafted. Each language needs a native speaker's review before real use.
+ */
+export type PhraseKey = keyof typeof PHRASES;
+
+export const PHRASES = {
+  // Headlines
+  h_flood: {
+    en: "Flood danger",
+    bn: "বন্যার বিপদ",
+    ne: "बाढीको खतरा",
+    my: "ရေကြီးမှု အန္တရာယ်",
+    id: "Bahaya banjir",
+    hi: "बाढ़ का खतरा",
+    ur: "سیلاب کا خطرہ",
+  },
+  h_evacuation: {
+    en: "Relief centre (PPS) is open",
+    bn: "আশ্রয়কেন্দ্র (PPS) খোলা হয়েছে",
+    ne: "राहत केन्द्र (PPS) खुलेको छ",
+    my: "ကယ်ဆယ်ရေးစခန်း (PPS) ဖွင့်ထားပါပြီ",
+    id: "Pusat evakuasi (PPS) sudah dibuka",
+    hi: "राहत केंद्र (PPS) खुल गया है",
+    ur: "امدادی مرکز (PPS) کھل گیا ہے",
+  },
+  h_all_clear: {
+    en: "Update: the danger has eased",
+    bn: "হালনাগাদ: বিপদ কমেছে",
+    ne: "अपडेट: खतरा घटेको छ",
+    my: "နောက်ဆုံးသတင်း - အန္တရာယ် လျော့နည်းသွားပါပြီ",
+    id: "Kabar terbaru: bahaya sudah berkurang",
+    hi: "अपडेट: खतरा कम हो गया है",
+    ur: "تازہ اطلاع: خطرہ کم ہو گیا ہے",
+  },
+  h_strong_wind_sea: {
+    en: "Strong wind and rough sea warning",
+    bn: "ঝোড়ো হাওয়া ও উত্তাল সমুদ্রের সতর্কতা",
+    ne: "तेज हावा र उर्लिँदो समुद्रको चेतावनी",
+    my: "လေပြင်းနှင့် ပင်လယ်လှိုင်းကြမ်း သတိပေးချက်",
+    id: "Peringatan angin kencang dan laut berombak",
+    hi: "तेज़ हवा और ऊँची समुद्री लहरों की चेतावनी",
+    ur: "تیز ہوا اور سمندر میں طغیانی کی وارننگ",
+  },
+  h_thunderstorm: {
+    en: "Thunderstorm warning",
+    bn: "বজ্রঝড়ের সতর্কতা",
+    ne: "चट्याङसहितको आँधीको चेतावनी",
+    my: "မိုးကြိုးမုန်တိုင်း သတိပေးချက်",
+    id: "Peringatan badai petir",
+    hi: "आंधी-तूफ़ान और बिजली की चेतावनी",
+    ur: "گرج چمک کے ساتھ طوفان کی وارننگ",
+  },
+  h_heavy_rain: {
+    en: "Continuous heavy rain warning",
+    bn: "টানা ভারী বৃষ্টির সতর্কতা",
+    ne: "लगातार भारी वर्षाको चेतावनी",
+    my: "မိုးသည်းထန်စွာ ဆက်တိုက်ရွာမည့် သတိပေးချက်",
+    id: "Peringatan hujan lebat berterusan",
+    hi: "लगातार भारी बारिश की चेतावनी",
+    ur: "مسلسل شدید بارش کی وارننگ",
+  },
+  h_other: {
+    en: "Official weather warning",
+    bn: "সরকারি আবহাওয়া সতর্কতা",
+    ne: "आधिकारिक मौसम चेतावनी",
+    my: "တရားဝင် မိုးလေဝသ သတိပေးချက်",
+    id: "Peringatan cuaca resmi",
+    hi: "आधिकारिक मौसम चेतावनी",
+    ur: "سرکاری موسمی وارننگ",
+  },
+
+  // Body
+  b_river_danger: {
+    en: "The water in {river} at {station} is at DANGER level and still rising.",
+    bn: "{station}-এ {river}-এর পানি বিপদসীমায় পৌঁছেছে এবং আরও বাড়ছে।",
+    ne: "{station} मा {river} को पानी खतराको तहमा पुगेको छ र अझै बढ्दैछ।",
+    my: "{station} ရှိ {river} ရေသည် အန္တရာယ်အဆင့်သို့ ရောက်ရှိပြီး ဆက်လက်မြင့်တက်နေသည်။",
+    id: "Air {river} di {station} sudah mencapai tingkat BAHAYA dan masih naik.",
+    hi: "{station} पर {river} का पानी खतरे के निशान पर है और अभी भी बढ़ रहा है।",
+    ur: "{station} پر {river} کا پانی خطرے کی سطح پر ہے اور ابھی بڑھ رہا ہے۔",
+  },
+  b_river_down: {
+    en: "The water in {river} at {station} has gone down to ALERT level. The order to move out is cancelled.",
+    bn: "{station}-এ {river}-এর পানি কমে সতর্ক স্তরে নেমেছে। সরে যাওয়ার নির্দেশ তুলে নেওয়া হয়েছে।",
+    ne: "{station} मा {river} को पानी घटेर सतर्कताको तहमा आएको छ। स्थान छोड्ने आदेश फिर्ता लिइएको छ।",
+    my: "{station} ရှိ {river} ရေသည် သတိပြုရန်အဆင့်သို့ ကျဆင်းသွားပြီ။ ရွှေ့ပြောင်းရန် အမိန့်ကို ရုပ်သိမ်းလိုက်ပြီ။",
+    id: "Air {river} di {station} sudah turun ke tingkat WASPADA. Perintah pindah dibatalkan.",
+    hi: "{station} पर {river} का पानी घटकर सतर्कता स्तर पर आ गया है। जगह खाली करने का आदेश वापस ले लिया गया है।",
+    ur: "{station} پر {river} کا پانی کم ہو کر احتیاط کی سطح پر آ گیا ہے۔ جگہ خالی کرنے کا حکم واپس لے لیا گیا ہے۔",
+  },
+  b_areas: {
+    en: "Areas affected: {areas}.",
+    bn: "ক্ষতিগ্রস্ত এলাকা: {areas}।",
+    ne: "प्रभावित क्षेत्र: {areas}।",
+    my: "ထိခိုက်နိုင်သော နေရာများ - {areas}။",
+    id: "Daerah terdampak: {areas}.",
+    hi: "प्रभावित क्षेत्र: {areas}।",
+    ur: "متاثرہ علاقے: {areas}۔",
+  },
+  b_sea: {
+    en: "This warning is for the sea near {areas}. It is dangerous for small boats.",
+    bn: "এই সতর্কতা {areas}-এর কাছের সমুদ্রের জন্য। ছোট নৌকার জন্য বিপজ্জনক।",
+    ne: "यो चेतावनी {areas} नजिकको समुद्रका लागि हो। साना डुङ्गाका लागि खतरनाक छ।",
+    my: "ဤသတိပေးချက်သည် {areas} အနီးရှိ ပင်လယ်အတွက် ဖြစ်သည်။ လှေငယ်များအတွက် အန္တရာယ်ရှိသည်။",
+    id: "Peringatan ini untuk laut di dekat {areas}. Berbahaya bagi perahu kecil.",
+    hi: "यह चेतावनी {areas} के पास समुद्र के लिए है। छोटी नावों के लिए खतरनाक है।",
+    ur: "یہ وارننگ {areas} کے قریب سمندر کے لیے ہے۔ چھوٹی کشتیوں کے لیے خطرناک ہے۔",
+  },
+  b_places_open: {
+    en: "Open now: {places}.",
+    bn: "এখন খোলা: {places}।",
+    ne: "अहिले खुला: {places}।",
+    my: "ယခု ဖွင့်ထားသည် - {places}။",
+    id: "Sekarang dibuka: {places}.",
+    hi: "अभी खुले हैं: {places}।",
+    ur: "ابھی کھلے ہیں: {places}۔",
+  },
+  b_valid: {
+    en: "Valid from {from} to {to}.",
+    bn: "কার্যকর: {from} থেকে {to} পর্যন্ত।",
+    ne: "लागू अवधि: {from} देखि {to} सम्म।",
+    my: "{from} မှ {to} အထိ အကျုံးဝင်သည်။",
+    id: "Berlaku dari {from} sampai {to}.",
+    hi: "{from} से {to} तक लागू।",
+    ur: "{from} سے {to} تک نافذ۔",
+  },
+
+  // Vetted safety actions. The action line may only use these.
+  a_move_high: {
+    en: "Move to higher ground or the nearest relief centre (PPS).",
+    bn: "উঁচু জায়গায় বা নিকটতম আশ্রয়কেন্দ্রে (PPS) চলে যান।",
+    ne: "अग्लो ठाउँ वा नजिकको राहत केन्द्र (PPS) मा जानुहोस्।",
+    my: "မြင့်သောနေရာ သို့မဟုတ် အနီးဆုံး ကယ်ဆယ်ရေးစခန်း (PPS) သို့ ပြောင်းရွှေ့ပါ။",
+    id: "Pindah ke tempat yang lebih tinggi atau pusat evakuasi (PPS) terdekat.",
+    hi: "ऊँची जगह या सबसे नज़दीकी राहत केंद्र (PPS) पर जाएँ।",
+    ur: "اونچی جگہ یا قریبی امدادی مرکز (PPS) پر چلے جائیں۔",
+  },
+  a_no_flood_water: {
+    en: "Do not walk or drive through flood water.",
+    bn: "বন্যার পানির মধ্য দিয়ে হাঁটবেন না বা গাড়ি চালাবেন না।",
+    ne: "बाढीको पानीमा नहिँड्नुहोस्, गाडी पनि नचलाउनुहोस्।",
+    my: "ရေကြီးနေသော ရေထဲတွင် လမ်းမလျှောက်ပါနှင့်၊ ကားမမောင်းပါနှင့်။",
+    id: "Jangan berjalan atau berkendara melewati air banjir.",
+    hi: "बाढ़ के पानी में न चलें और न गाड़ी चलाएँ।",
+    ur: "سیلابی پانی میں نہ چلیں اور نہ گاڑی چلائیں۔",
+  },
+  a_bag_docs: {
+    en: "Keep your passport, phone and medicine in a plastic bag.",
+    bn: "পাসপোর্ট, ফোন ও ওষুধ প্লাস্টিকের ব্যাগে রাখুন।",
+    ne: "राहदानी, फोन र औषधि प्लास्टिकको झोलामा राख्नुहोस्।",
+    my: "နိုင်ငံကူးလက်မှတ်၊ ဖုန်းနှင့် ဆေးဝါးများကို ပလတ်စတစ်အိတ်ထဲ ထည့်ထားပါ။",
+    id: "Simpan paspor, HP, dan obat di dalam kantong plastik.",
+    hi: "पासपोर्ट, फ़ोन और दवाइयाँ प्लास्टिक की थैली में रखें।",
+    ur: "پاسپورٹ، فون اور دوائیں پلاسٹک کے تھیلے میں رکھیں۔",
+  },
+  a_avoid_rivers: {
+    en: "Stay away from rivers, drains and low areas.",
+    bn: "নদী, নালা ও নিচু এলাকা থেকে দূরে থাকুন।",
+    ne: "खोला, ढल र होचो ठाउँबाट टाढा रहनुहोस्।",
+    my: "မြစ်၊ မြောင်းနှင့် နိမ့်သောနေရာများမှ ဝေးဝေးနေပါ။",
+    id: "Jauhi sungai, parit, dan daerah rendah.",
+    hi: "नदी, नालों और निचले इलाकों से दूर रहें।",
+    ur: "دریا، نالوں اور نشیبی علاقوں سے دور رہیں۔",
+  },
+  a_indoors_lightning: {
+    en: "Stay indoors while there is lightning.",
+    bn: "বজ্রপাতের সময় ঘরের ভিতরে থাকুন।",
+    ne: "चट्याङ परिरहँदा घरभित्रै बस्नुहोस्।",
+    my: "မိုးကြိုးပစ်နေစဉ် အိမ်ထဲတွင်သာ နေပါ။",
+    id: "Tetap di dalam ruangan saat ada petir.",
+    hi: "बिजली चमकने के दौरान घर के अंदर रहें।",
+    ur: "بجلی چمکنے کے دوران گھر کے اندر رہیں۔",
+  },
+  a_away_sea: {
+    en: "Stay away from the sea and boats.",
+    bn: "সমুদ্র ও নৌকা থেকে দূরে থাকুন।",
+    ne: "समुद्र र डुङ्गाबाट टाढा रहनुहोस्।",
+    my: "ပင်လယ်နှင့် လှေများမှ ဝေးဝေးနေပါ။",
+    id: "Jauhi laut dan perahu.",
+    hi: "समुद्र और नावों से दूर रहें।",
+    ur: "سمندر اور کشتیوں سے دور رہیں۔",
+  },
+  a_away_trees: {
+    en: "Stay away from trees and loose roofing.",
+    bn: "গাছ ও আলগা ছাদ থেকে দূরে থাকুন।",
+    ne: "रूख र खुकुलो छानाबाट टाढा रहनुहोस्।",
+    my: "သစ်ပင်များနှင့် ချောင်နေသော အမိုးများမှ ဝေးဝေးနေပါ။",
+    id: "Jauhi pohon dan atap yang tidak kokoh.",
+    hi: "पेड़ों और ढीली छतों से दूर रहें।",
+    ur: "درختوں اور ڈھیلی چھتوں سے دور رہیں۔",
+  },
+  a_go_pps: {
+    en: "Go to the relief centre named above. Bring your ID and medicine.",
+    bn: "উপরে লেখা আশ্রয়কেন্দ্রে যান। পরিচয়পত্র ও ওষুধ সঙ্গে নিন।",
+    ne: "माथि उल्लेखित राहत केन्द्रमा जानुहोस्। परिचयपत्र र औषधि साथमा लिनुहोस्।",
+    my: "အထက်တွင် ဖော်ပြထားသော ကယ်ဆယ်ရေးစခန်းသို့ သွားပါ။ မှတ်ပုံတင်နှင့် ဆေးဝါးများ ယူဆောင်ပါ။",
+    id: "Pergi ke pusat evakuasi yang disebut di atas. Bawa kartu identitas dan obat.",
+    hi: "ऊपर बताए गए राहत केंद्र पर जाएँ। पहचान पत्र और दवाइयाँ साथ लें।",
+    ur: "اوپر بتائے گئے امدادی مرکز پر جائیں۔ شناختی کارڈ اور دوائیں ساتھ لے جائیں۔",
+  },
+  a_stay_alert: {
+    en: "Stay alert and wait for official updates.",
+    bn: "সতর্ক থাকুন এবং সরকারি হালনাগাদের অপেক্ষা করুন।",
+    ne: "सतर्क रहनुहोस् र आधिकारिक जानकारीको प्रतीक्षा गर्नुहोस्।",
+    my: "သတိထားနေပြီး တရားဝင် သတင်းအသစ်များကို စောင့်ပါ။",
+    id: "Tetap waspada dan tunggu kabar resmi berikutnya.",
+    hi: "सतर्क रहें और आधिकारिक जानकारी का इंतज़ार करें।",
+    ur: "ہوشیار رہیں اور سرکاری اطلاع کا انتظار کریں۔",
+  },
+
+  // Map link and source
+  r_map: {
+    en: "Map to {place}",
+    bn: "{place}-এ যাওয়ার মানচিত্র",
+    ne: "{place} जाने नक्सा",
+    my: "{place} သို့ သွားရန် မြေပုံ",
+    id: "Peta ke {place}",
+    hi: "{place} तक जाने का नक्शा",
+    ur: "{place} تک جانے کا نقشہ",
+  },
+  s_source: {
+    en: "Source: {source}, issued {time}. Machine translated from the official warning.",
+    bn: "সূত্র: {source}, জারি {time}। সরকারি সতর্কতা থেকে যন্ত্রে অনূদিত।",
+    ne: "स्रोत: {source}, जारी {time}। आधिकारिक चेतावनीबाट मेसिनद्वारा अनुवादित।",
+    my: "ရင်းမြစ် - {source}၊ ထုတ်ပြန်ချိန် {time}။ တရားဝင် သတိပေးချက်မှ စက်ဖြင့် ဘာသာပြန်ထားသည်။",
+    id: "Sumber: {source}, dikeluarkan {time}. Diterjemahkan mesin dari peringatan resmi.",
+    hi: "स्रोत: {source}, जारी {time}। आधिकारिक चेतावनी का मशीन अनुवाद।",
+    ur: "ماخذ: {source}، جاری {time}۔ سرکاری وارننگ کا مشینی ترجمہ۔",
+  },
+} satisfies Record<string, Record<GlossLang, string>>;
+
+/** The only actions allowed for each hazard. */
+export const VETTED_ACTIONS: Record<string, PhraseKey[]> = {
+  flood: ["a_move_high", "a_no_flood_water", "a_bag_docs"],
+  evacuation: ["a_go_pps", "a_no_flood_water"],
+  all_clear: ["a_stay_alert"],
+  strong_wind_sea: ["a_away_sea", "a_stay_alert"],
+  thunderstorm: ["a_indoors_lightning", "a_avoid_rivers", "a_away_trees"],
+  heavy_rain: ["a_avoid_rivers", "a_bag_docs"],
+  other: ["a_stay_alert"],
+};
